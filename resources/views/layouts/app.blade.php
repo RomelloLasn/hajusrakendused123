@@ -12,12 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #00c8e3;
-            --primary-hover: #00a7bf;
-            --background-color: #121212;
-            --secondary-bg: #1a1a1a;
-            --text-color: #f5f5f5;
-            --border-color: #2a2a2a;
+            --primary-color: #ff0000;
+            --primary-hover: brown;
+            --background-color: #f4ede7;
+            --secondary-bg: #fff;
+            --text-color: #181818;
+            --border-color: #181818;
             --header-height: 70px;
             --nav-item-radius: 8px;
         }
@@ -28,15 +28,15 @@
             font-family: 'Poppins', sans-serif;
             padding-top: var(--header-height);
         }
-        
+
         .bg-custom-dark {
             background-color: var(--secondary-bg);
         }
-        
+
         .text-cyan {
             color: var(--primary-color);
         }
-        
+
         .btn-cyan {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
@@ -46,7 +46,7 @@
             padding: 8px 16px;
             transition: all 0.3s ease;
         }
-        
+
         .btn-cyan:hover {
             background-color: var(--primary-hover);
             border-color: var(--primary-hover);
@@ -54,7 +54,7 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 200, 227, 0.3);
         }
-        
+
         .btn-outline-cyan {
             border-color: var(--primary-color);
             color: var(--primary-color);
@@ -63,18 +63,18 @@
             padding: 8px 16px;
             transition: all 0.3s ease;
         }
-        
+
         .btn-outline-cyan:hover {
             background-color: var(--primary-color);
             color: #000;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 200, 227, 0.3);
         }
-        
+
+        /* Navbar styles */
         .navbar {
             height: var(--header-height);
-            background-color: rgba(26, 26, 26, 0.8);
-            backdrop-filter: blur(10px);
+            background-color: var(--background-color) !important;
             border-bottom: 1px solid var(--border-color);
             position: fixed;
             top: 0;
@@ -82,9 +82,9 @@
             left: 0;
             z-index: 1030;
             padding: 0;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: none;
         }
-        
+
         .navbar-brand {
             font-weight: 700;
             font-size: 1.4rem;
@@ -95,25 +95,20 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
+        /* Remove the line below the logo */
         .navbar-brand::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background-color: var(--primary-color);
+            display: none !important;
         }
-        
+
         .navbar-brand span {
-            color: var(--primary-color);
+            color: #181818; /* Changed from var(--primary-color) to black */
         }
-        
+
         .nav-link {
             font-size: 0.9rem;
             font-weight: 500;
-            color: #bbb !important;
+            color: var(--text-color) !important;
             padding: 8px 16px;
             margin: 0 2px;
             border-radius: var(--nav-item-radius);
@@ -122,39 +117,30 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .nav-link:hover {
-            color: var(--text-color) !important;
+            color: var(--primary-color) !important;
             background-color: transparent;
         }
-        
+
         .nav-link.active {
             color: var(--primary-color) !important;
             background-color: transparent;
             font-weight: 600;
         }
-        
+
         .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 3px;
-            background-color: var(--primary-color);
-            border-radius: 10px;
-            transition: width 0.3s ease;
+            display: none !important;
         }
-        
+
         .nav-link:hover::after {
             content: none;
         }
-        
+
         .nav-item {
             position: relative;
         }
-        
+
         .nav-item:not(:last-child)::after {
             content: '';
             position: absolute;
@@ -163,16 +149,16 @@
             transform: translateY(-50%);
             height: 20px;
             width: 1px;
-            background-color: var(--primary-color);
+            background-color: var(--border-color);
         }
-        
+
         .navbar-nav {
             gap: 0.5rem;
             align-items: center;
             padding: 6px;
             border-radius: 12px;
         }
-        
+
         .dropdown-menu {
             min-width: 200px;
             margin-top: 0.5rem;
@@ -180,71 +166,78 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: #fff;
         }
-        
+
         .dropdown-item {
-            color: #999 !important;
+            color: #181818 !important;
             font-size: 0.9rem;
             padding: 0.5rem 0.75rem;
             border-radius: 4px;
         }
-        
+
         .dropdown-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-color) !important;
+            background-color: rgba(0,0,0,0.03);
+            color: var(--primary-color) !important;
         }
-        
+
         .dropdown-item i {
             margin-right: 0.5rem;
         }
-        
+
         .alert {
             border-radius: 0.5rem;
             border: none;
         }
-        
+
+        /* Improved card style for better contrast */
         .card {
-            background-color: var(--secondary-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
         }
-        
+
         .card-header {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid var(--border-color);
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
         }
-        
+
+        .card-body {
+            color: #222;
+        }
+
         .table {
             color: var(--text-color);
         }
-        
+
         .table th, 
         .table td,
         .table thead th {
             color: var(--text-color) !important;
         }
-        
+
         .table-striped > tbody > tr:nth-of-type(odd),
         .table-striped > tbody > tr:nth-of-type(even) {
             color: var(--text-color);
             background-color: var(--secondary-bg);
         }
-        
+
         .table-striped > tbody > tr:nth-of-type(odd) {
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: rgba(0, 0, 0, 0.03);
         }
-        
+
         .text-muted, 
         small, 
         .card-body p.text-muted,
         .text-muted small {
-            color: var(--text-color) !important;
+            color: #888 !important;
         }
-        
+
         .leaflet-popup-content {
             color: #000;
         }
-        
+
         .form-control,
         .form-select,
         .input-group-text {
@@ -252,7 +245,7 @@
             color: var(--text-color);
             border-color: var(--border-color);
         }
-        
+
         .form-control:focus,
         .form-select:focus {
             background-color: var(--secondary-bg);
@@ -260,19 +253,17 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.25rem rgba(0, 200, 227, 0.25);
         }
-        
+
         input[type="number"] {
             background-color: var(--secondary-bg);
             color: var(--text-color);
         }
-        
 
         .card-img-top {
             height: 200px;
             object-fit: cover;
             background-color: var(--secondary-bg);
         }
-        
 
         .form-control:-webkit-autofill,
         .form-control:-webkit-autofill:hover,
@@ -284,29 +275,29 @@
             -webkit-box-shadow: 0 0 0px 1000px var(--secondary-bg) inset;
             transition: background-color 5000s ease-in-out 0s;
         }
-        
+
         @media (max-width: 992px) {
             .navbar-collapse {
-                background-color: var(--secondary-bg);
+                background-color: var(--background-color);
                 padding: 1rem;
                 border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                box-shadow: none;
                 margin-top: 10px;
             }
-            
+
             .navbar-toggler {
                 border: none;
                 color: var(--primary-color);
             }
-            
+
             .navbar-toggler:focus {
                 box-shadow: none;
             }
-            
+
             .nav-item:not(:last-child)::after {
                 display: none;
             }
-            
+
             .navbar-nav {
                 background-color: transparent;
                 padding: 0;
@@ -416,4 +407,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     @yield('scripts')
 </body>
-</html> 
+</html>     

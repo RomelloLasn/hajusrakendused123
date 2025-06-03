@@ -1,8 +1,10 @@
 <?php
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MonsterController;
+use App\Http\Controllers\Api\NewsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,5 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Monster API routes
 Route::get('/monsters', [MonsterController::class, 'index']);
-Route::get('/monsters/{id}', [MonsterController::class, 'show']); 
+Route::get('/monsters/{id}', [MonsterController::class, 'show']);
+
+// News API resource routes
+Route::apiResource('news', NewsController::class);

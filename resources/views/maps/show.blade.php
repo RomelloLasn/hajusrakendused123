@@ -38,28 +38,32 @@
         color: rgb(0, 220, 247);
     }
 
-    .marker-content {
+    .card {
         background: rgba(20, 20, 20, 0.4);
         border-radius: 8px;
+        border: none;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.10);
         overflow: hidden;
+    }
+
+    .card-body {
+        color: #e0e0e0;
+        padding: 2rem;
     }
 
     .marker-map {
         height: 400px;
         width: 100%;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .marker-details {
-        padding: 2rem;
+        border-radius: 8px 8px 0 0;
     }
 
     .marker-meta {
         display: flex;
         align-items: center;
         gap: 1rem;
-        color: #666;
-        font-size: 0.85rem;
+        color: #66c;
+        font-size: 0.95rem;
         margin-bottom: 1.5rem;
     }
 
@@ -80,21 +84,26 @@
     }
 
     .action-btn {
-        background: rgba(0, 200, 227, 0.1);
-        color: rgb(0, 200, 227);
-        border: 1px solid rgba(0, 200, 227, 0.2);
-        padding: 0.5rem 1rem;
+        background: rgb(0, 200, 227);
+        color: #000;
+        border: none;
         border-radius: 4px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: background 0.3s;
+        padding: 0.5rem 1.2rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        text-decoration: none;
     }
 
     .action-btn:hover {
-        background: rgba(0, 200, 227, 0.2);
+        background: rgb(0, 220, 247);
+        color: #000;
     }
 
     .delete-btn {
@@ -105,11 +114,18 @@
 
     .delete-btn:hover {
         background: rgba(220, 53, 69, 0.2);
+        color: rgb(220, 53, 69);
     }
 
     @media (max-width: 768px) {
         .marker-actions {
             flex-direction: column;
+        }
+        .card-body {
+            padding: 1rem;
+        }
+        .marker-map {
+            height: 250px;
         }
     }
 </style>
@@ -123,9 +139,9 @@
         </a>
     </div>
 
-    <div class="marker-content">
+    <div class="card">
         <div id="map" class="marker-map"></div>
-        <div class="marker-details">
+        <div class="card-body">
             <h1 class="marker-title">{{ $marker->name }}</h1>
             <div class="marker-meta">
                 <span class="marker-coordinates">{{ $marker->latitude }}, {{ $marker->longitude }}</span>
@@ -166,8 +182,8 @@
         
         L.marker([lat, lng])
             .addTo(map)
-            .bindPopup('<b>{{ $marker->name }}</b><br>{{ $marker->description ?: "" }}')
+            .bindPopup('<b>{{ $marker->name }}</b><br>{{ $marker->description ? e($marker->description) : "" }}')
             .openPopup();
     });
 </script>
-@endsection 
+@endsection

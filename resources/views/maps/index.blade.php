@@ -5,135 +5,130 @@
 @section('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
 <style>
+    body {
+        background: #f6f0eb !important;
+    }
     .markers-container {
-        max-width: 1400px;
-        margin: 2rem auto;
+        max-width: 1200px;
+        margin: 3rem auto;
         padding: 0 1rem;
     }
-
     .markers-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .markers-title {
-        font-size: 2rem;
+        font-size: 2.1rem;
         font-weight: 700;
-        color: #fff;
+        color: #181818;
     }
-
     .create-marker-btn {
-        background: rgb(0, 200, 227);
-        color: #000;
+        background: #ff2222;
+        color: #fff;
         padding: 0.75rem 1.5rem;
-        border-radius: 4px;
-        font-weight: 600;
+        border-radius: 7px;
+        font-weight: 700;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: background 0.2s;
         border: none;
-        font-size: 0.9rem;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 1px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     }
-
     .create-marker-btn:hover {
-        background: rgb(0, 220, 247);
-        transform: translateY(-1px);
+        background: #b80000;
+        color: #fff;
     }
-
     .map-container {
         margin-bottom: 2rem;
-        border-radius: 8px;
+        border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
         position: relative;
+        background: #fff;
     }
-
     #map {
-        height: 500px;
+        height: 400px;
         width: 100%;
-        border: 2px solid var(--primary-color);
-        overflow-y: scroll;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+        border-radius: 12px;
+        border: 2px solid #ff2222;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
     }
-
-    #map::-webkit-scrollbar {
-        display: none;
-    }
-
+    /* --- FIXED: Popup form hovers over map and page --- */
     .marker-form {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(20, 20, 20, 0.9);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
         padding: 1.5rem;
-        border-radius: 8px;
-        width: 300px;
-        z-index: 1000;
+        border-radius: 12px;
+        width: 320px;
+        z-index: 2000;
         display: none;
-        border: 1px solid rgba(0, 200, 227, 0.2);
+        border: 2px solid #ff2222;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        max-width: 95vw;
     }
-
     .marker-form.active {
         display: block;
+        animation: popup-fade-in 0.2s;
     }
-
+    @keyframes popup-fade-in {
+        from { opacity: 0; transform: translate(-50%, -60%);}
+        to { opacity: 1; transform: translate(-50%, -50%);}
+    }
     .form-group {
         margin-bottom: 1rem;
     }
-
     .form-label {
         display: block;
         margin-bottom: 0.5rem;
-        color: #fff;
-        font-weight: 500;
+        color: #181818;
+        font-weight: 600;
     }
-
     .form-control {
         width: 100%;
-        background: rgba(40, 40, 40, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        background: #f6f0eb !important;
+        border: 1.5px solid #ececec !important;
+        border-radius: 7px;
         padding: 0.75rem;
-        color: #fff;
-        font-size: 0.9rem;
+        color: #181818 !important;
+        font-size: 1rem;
+        transition: border-color 0.3s;
     }
-
     .form-control:focus {
-        outline: none;
-        border-color: rgba(0, 200, 227, 0.4);
-        box-shadow: 0 0 0 2px rgba(0, 200, 227, 0.1);
+        border-color: #ff2222 !important;
+        background: #f3e7df !important;
+        color: #181818 !important;
+        box-shadow: 0 0 0 2px #ffeaea;
     }
-
     .location-preview {
         margin-top: 1rem;
         padding: 0.75rem;
-        background: rgba(0, 200, 227, 0.1);
-        border-radius: 4px;
-        font-size: 0.85rem;
-        color: rgb(0, 200, 227);
+        background: #fbeeee;
+        border-radius: 7px;
+        font-size: 0.95rem;
+        color: #ff2222;
+        font-weight: 600;
     }
-
     .form-actions {
         display: flex;
         gap: 0.75rem;
         margin-top: 1.5rem;
     }
-
     .btn {
         flex: 1;
         padding: 0.75rem;
-        border-radius: 4px;
-        font-weight: 600;
+        border-radius: 7px;
+        font-weight: 700;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.2s;
         border: none;
-        font-size: 0.9rem;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         cursor: pointer;
@@ -142,91 +137,82 @@
         justify-content: center;
         gap: 0.5rem;
     }
-
     .btn-submit {
-        background: rgb(0, 200, 227);
-        color: #000;
-    }
-
-    .btn-submit:hover {
-        background: rgb(0, 220, 247);
-    }
-
-    .btn-cancel {
-        background: rgba(100, 100, 100, 0.2);
+        background: #ff2222;
         color: #fff;
     }
-
+    .btn-submit:hover {
+        background: #b80000;
+        color: #fff;
+    }
+    .btn-cancel {
+        background: #fff;
+        color: #ff2222;
+        border: 2px solid #ff2222;
+    }
     .btn-cancel:hover {
-        background: rgba(100, 100, 100, 0.3);
+        background: #ff2222;
+        color: #fff;
     }
-
     .markers-list {
-        background: rgba(20, 20, 20, 0.4);
-        border-radius: 8px;
+        background: #fff;
+        border-radius: 18px;
         overflow: hidden;
+        box-shadow: 0 6px 32px rgba(0,0,0,0.08);
+        margin-top: 2rem;
     }
-
     .marker-item {
         display: grid;
         grid-template-columns: auto 1fr auto;
         gap: 1.5rem;
         padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        transition: background 0.3s ease;
+        border-bottom: 1px solid #f3e7df;
+        transition: background 0.3s;
     }
-
     .marker-item:hover {
-        background: rgba(0, 200, 227, 0.05);
+        background: #fbeeee;
     }
-
     .marker-item:last-child {
         border-bottom: none;
     }
-
     .marker-icon {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: rgba(0, 200, 227, 0.2);
+        background: #fbeeee;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.5rem;
-        color: rgb(0, 200, 227);
+        color: #ff2222;
     }
-
     .marker-content {
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
-
     .marker-name {
         font-size: 1.1rem;
-        font-weight: 600;
-        color: #fff;
+        font-weight: 700;
+        color: #181818;
         margin-bottom: 0.5rem;
         text-decoration: none;
-        transition: color 0.3s ease;
+        transition: color 0.2s;
     }
-
     .marker-name:hover {
-        color: rgb(0, 200, 227);
+        color: #ff2222;
     }
-
     .marker-meta {
         display: flex;
         align-items: center;
         gap: 1rem;
-        color: #666;
-        font-size: 0.85rem;
+        color: #888;
+        font-size: 0.95rem;
     }
-
     .marker-coordinates {
-        color: rgb(0, 200, 227);
+        color: #ff2222;
+        font-weight: 600;
     }
-
     .marker-actions {
         display: flex;
         flex-direction: column;
@@ -234,91 +220,88 @@
         justify-content: center;
         gap: 0.5rem;
     }
-
     .action-btn {
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 500;
+        padding: 6px 16px;
+        border-radius: 7px;
+        font-size: 0.95rem;
+        font-weight: 700;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.2s ease;
+        transition: all 0.2s;
         border: none;
         text-decoration: none;
+        background: #fff;
+        color: #ff2222;
+        border: 2px solid #ff2222;
     }
-
     .action-btn i {
         font-size: 1rem;
     }
-
+    .action-btn:hover {
+        background: #ff2222;
+        color: #fff;
+    }
     .btn-view {
-        background: rgba(0, 200, 227, 0.1);
-        color: var(--primary-color);
+        border-color: #ff2222;
     }
-
-    .btn-view:hover {
-        background: rgba(0, 200, 227, 0.2);
-        color: var(--primary-color);
-    }
-
     .btn-edit {
-        background: rgba(255, 193, 7, 0.1);
+        border-color: #ffc107;
         color: #ffc107;
     }
-
     .btn-edit:hover {
-        background: rgba(255, 193, 7, 0.2);
-        color: #ffc107;
+        background: #ffc107;
+        color: #fff;
     }
-
     .btn-delete {
-        background: rgba(220, 53, 69, 0.1);
+        border-color: #dc3545;
         color: #dc3545;
     }
-
     .btn-delete:hover {
-        background: rgba(220, 53, 69, 0.2);
-        color: #dc3545;
+        background: #dc3545;
+        color: #fff;
     }
-
     .no-markers {
         padding: 3rem;
         text-align: center;
-        color: #666;
+        color: #888;
+        background: #fff;
     }
-
     .no-markers i {
         font-size: 3rem;
-        color: rgb(0, 200, 227);
+        color: #ff2222;
         margin-bottom: 1rem;
     }
-
+    @media (max-width: 900px) {
+        .markers-container {
+            max-width: 100%;
+        }
+        .marker-form {
+            width: 95vw;
+            max-width: 400px;
+        }
+    }
     @media (max-width: 768px) {
         .marker-item {
             grid-template-columns: 1fr;
             gap: 1rem;
         }
-
         .marker-icon {
             width: 40px;
             height: 40px;
             font-size: 1.2rem;
         }
-
         .marker-actions {
             flex-direction: row;
             align-items: center;
             justify-content: flex-start;
         }
-
         .marker-form {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
+            width: 90vw;
             max-width: 400px;
+        }
+        #map {
+            height: 220px;
         }
     }
 </style>
@@ -335,32 +318,33 @@
 
     <div class="map-container">
         <div id="map"></div>
-        <div id="markerForm" class="marker-form">
-            <form id="newMarkerForm">
-                @csrf
-                <div class="form-group">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required placeholder="Enter marker name">
-                </div>
-                <div class="form-group">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter marker description"></textarea>
-                </div>
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
-                <div class="location-preview">
-                    Selected location: <span id="locationPreview">Click on the map to select a location</span>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-submit">
-                        <i class="bi bi-check-lg"></i> Save
-                    </button>
-                    <button type="button" class="btn btn-cancel" id="cancelMarker">
-                        <i class="bi bi-x-lg"></i> Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
+    </div>
+    <!-- Move the markerForm outside of map-container for proper overlay -->
+    <div id="markerForm" class="marker-form">
+        <form id="newMarkerForm">
+            @csrf
+            <div class="form-group">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" required placeholder="Enter marker name">
+            </div>
+            <div class="form-group">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter marker description"></textarea>
+            </div>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+            <div class="location-preview">
+                Selected location: <span id="locationPreview">Click on the map to select a location</span>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-submit">
+                    <i class="bi bi-check-lg"></i> Save
+                </button>
+                <button type="button" class="btn btn-cancel" id="cancelMarker">
+                    <i class="bi bi-x-lg"></i> Cancel
+                </button>
+            </div>
+        </form>
     </div>
 
     <div class="markers-list">
@@ -446,7 +430,7 @@
             selectedMarker = L.marker(e.latlng, {
                 icon: L.divIcon({
                     className: 'selected-marker',
-                    html: '<div style="background: var(--primary-color); width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0, 200, 227, 0.5);"></div>'
+                    html: '<div style="background: #ff2222; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #ff2222;"></div>'
                 })
             }).addTo(map);
         });
@@ -508,4 +492,4 @@
         });
     });
 </script>
-@endsection 
+@endsection

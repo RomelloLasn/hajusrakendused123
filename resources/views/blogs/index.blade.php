@@ -5,7 +5,7 @@
 @section('styles')
 <style>
     .blog-container {
-        max-width: 1200px;
+        max-width: 1100px;
         margin: 2rem auto;
         padding: 0 1rem;
     }
@@ -16,38 +16,42 @@
         align-items: center;
         margin-bottom: 2rem;
         padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid #e0e0e0;
     }
 
     .blog-title {
         font-size: 2rem;
         font-weight: 700;
-        color: #fff;
+        color: #181818;
     }
 
     .create-post-btn {
-        background: rgb(0, 200, 227);
-        color: #000;
+        background: var(--primary-color, #00c8e3);
+        color: #fff;
         padding: 0.75rem 1.5rem;
-        border-radius: 4px;
+        border-radius: 8px;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.3s ease;
         border: none;
-        font-size: 0.9rem;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 1px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .create-post-btn:hover {
-        background: rgb(0, 220, 247);
-        transform: translateY(-1px);
+        background: var(--primary-hover, #00a7bf);
+        color: #fff;
+        transform: translateY(-1px) scale(1.03);
     }
 
     .posts-container {
-        background: rgba(20, 20, 20, 0.4);
-        border-radius: 8px;
+        background: #fff;
+        border-radius: 16px;
         overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        border: 1px solid #ececec;
     }
 
     .post-item {
@@ -55,12 +59,13 @@
         grid-template-columns: auto 1fr auto;
         gap: 1.5rem;
         padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid #ececec;
         transition: background 0.3s ease;
+        align-items: center;
     }
 
     .post-item:hover {
-        background: rgba(0, 200, 227, 0.05);
+        background: #f4ede7;
     }
 
     .post-item:last-child {
@@ -71,12 +76,13 @@
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: rgba(0, 200, 227, 0.2);
+        background: var(--primary-color, #00c8e3);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.5rem;
-        color: rgb(0, 200, 227);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .post-content {
@@ -88,27 +94,28 @@
     .post-title {
         font-size: 1.1rem;
         font-weight: 600;
-        color: #fff;
+        color: #181818;
         margin-bottom: 0.5rem;
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
     .post-title:hover {
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
     }
 
     .post-meta {
         display: flex;
         align-items: center;
         gap: 1rem;
-        color: #666;
-        font-size: 0.85rem;
+        color: #888;
+        font-size: 0.95rem;
     }
 
     .post-author {
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
         text-decoration: none;
+        font-weight: 500;
     }
 
     .post-stats {
@@ -124,11 +131,11 @@
         align-items: center;
         gap: 0.5rem;
         color: #888;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
     }
 
     .stat i {
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
     }
 
     .pagination {
@@ -139,22 +146,25 @@
     }
 
     .page-link {
-        background: rgba(0, 200, 227, 0.1);
-        border: 1px solid rgba(0, 200, 227, 0.2);
-        color: #fff;
+        background: #f4ede7;
+        border: 1px solid #ececec;
+        color: #181818;
         padding: 0.5rem 1rem;
-        border-radius: 4px;
+        border-radius: 6px;
         text-decoration: none;
         transition: all 0.3s ease;
+        font-weight: 500;
     }
 
     .page-link:hover {
-        background: rgba(0, 200, 227, 0.2);
+        background: var(--primary-color, #00c8e3);
+        color: #fff;
     }
 
     .page-link.active {
-        background: rgb(0, 200, 227);
-        color: #000;
+        background: var(--primary-color, #00c8e3);
+        color: #fff;
+        border-color: var(--primary-color, #00c8e3);
     }
 
     @media (max-width: 768px) {
@@ -205,9 +215,9 @@
             </div>
         </div>
         @empty
-        <div class="post-item" style="text-align: center; padding: 3rem 1.5rem;">
-            <div style="color: #666;">
-                <i class="bi bi-journal-text" style="font-size: 3rem; color: rgb(0, 200, 227); margin-bottom: 1rem;"></i>
+        <div class="post-item" style="text-align: center; padding: 3rem 1.5rem; background: #f4ede7;">
+            <div style="color: #888;">
+                <i class="bi bi-journal-text" style="font-size: 3rem; color: var(--primary-color, #00c8e3); margin-bottom: 1rem;"></i>
                 <p style="margin: 0;">No posts yet. Be the first to create one!</p>
             </div>
         </div>
@@ -218,4 +228,4 @@
         {{ $posts->links() }}
     </div>
 </div>
-@endsection 
+@endsection

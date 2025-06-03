@@ -5,7 +5,7 @@
 @section('styles')
 <style>
     .blog-container {
-        max-width: 1000px;
+        max-width: 900px;
         margin: 2rem auto;
         padding: 0 1rem;
     }
@@ -20,11 +20,11 @@
     .blog-title {
         font-size: 2rem;
         font-weight: 700;
-        color: #fff;
+        color: #181818;
     }
 
     .back-btn {
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -34,14 +34,15 @@
     }
 
     .back-btn:hover {
-        color: rgb(0, 220, 247);
+        color: var(--primary-hover, #00a7bf);
     }
 
     .form-container {
-        background: rgba(20, 20, 20, 0.4);
-        border-radius: 8px;
-        overflow: hidden;
-        padding: 2rem;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        padding: 2.5rem 2rem;
+        border: 1px solid #ececec;
     }
 
     .form-group {
@@ -52,34 +53,35 @@
         display: block;
         margin-bottom: 0.75rem;
         font-weight: 600;
-        color: #fff;
+        color: #181818;
     }
 
     .form-control {
         width: 100%;
-        background: rgba(40, 40, 40, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        background: #f4ede7;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
         padding: 0.75rem 1rem;
-        color: #fff;
+        color: #181818;
         font-size: 1rem;
-        transition: all 0.3s ease;
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     .form-control:focus {
         outline: none;
-        border-color: rgba(0, 200, 227, 0.4);
-        box-shadow: 0 0 0 2px rgba(0, 200, 227, 0.1);
+        border-color: var(--primary-color, #00c8e3);
+        box-shadow: 0 0 0 2px rgba(0, 200, 227, 0.08);
+        background: #fff;
     }
 
     textarea.form-control {
         resize: vertical;
-        min-height: 200px;
+        min-height: 160px;
     }
 
     .form-error {
         color: #dc3545;
-        font-size: 0.875rem;
+        font-size: 0.95rem;
         margin-top: 0.5rem;
     }
 
@@ -92,12 +94,12 @@
 
     .btn {
         padding: 0.75rem 1.5rem;
-        border-radius: 4px;
+        border-radius: 6px;
         font-weight: 600;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.2s;
         border: none;
-        font-size: 0.9rem;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         cursor: pointer;
@@ -107,21 +109,27 @@
     }
 
     .btn-cancel {
-        background: rgba(100, 100, 100, 0.2);
-        color: #fff;
+        background: transparent;
+        color: #181818;
+        border: 1px solid #e0e0e0;
     }
 
     .btn-cancel:hover {
-        background: rgba(100, 100, 100, 0.3);
+        background: #f4ede7;
+        color: var(--primary-color, #00c8e3);
+        border-color: var(--primary-color, #00c8e3);
     }
 
     .btn-submit {
-        background: rgb(0, 200, 227);
-        color: #000;
+        background: var(--primary-color, #00c8e3);
+        color: #fff;
+        border: 1px solid var(--primary-color, #00c8e3);
     }
 
     .btn-submit:hover {
-        background: rgb(0, 220, 247);
+        background: var(--primary-hover, #00a7bf);
+        border-color: var(--primary-hover, #00a7bf);
+        color: #fff;
     }
 </style>
 @endsection
@@ -165,4 +173,4 @@
         </form>
     </div>
 </div>
-@endsection 
+@endsection

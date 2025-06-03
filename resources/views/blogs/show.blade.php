@@ -20,11 +20,11 @@
     .blog-title {
         font-size: 2rem;
         font-weight: 700;
-        color: #fff;
+        color: #181818;
     }
 
     .back-btn {
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -34,33 +34,36 @@
     }
 
     .back-btn:hover {
-        color: rgb(0, 220, 247);
+        color: var(--primary-hover, #00a7bf);
     }
 
     .post-container {
-        background: rgba(20, 20, 20, 0.4);
-        border-radius: 8px;
+        background: #fff;
+        border-radius: 16px;
         overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        border: 1px solid #ececec;
     }
 
     .post-header {
         display: flex;
         align-items: center;
         padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid #ececec;
     }
 
     .author-avatar {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: rgba(0, 200, 227, 0.2);
+        background: var(--primary-color, #00c8e3);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.5rem;
-        color: rgb(0, 200, 227);
+        color: #fff;
         margin-right: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .post-meta {
@@ -69,14 +72,14 @@
 
     .post-author {
         font-size: 1rem;
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
         text-decoration: none;
         font-weight: 600;
     }
 
     .post-date {
         font-size: 0.85rem;
-        color: #666;
+        color: #888;
         margin-top: 0.25rem;
     }
 
@@ -86,36 +89,41 @@
     }
 
     .action-btn {
-        background: rgba(0, 200, 227, 0.1);
-        color: rgb(0, 200, 227);
-        border: 1px solid rgba(0, 200, 227, 0.2);
+        background: #f4ede7;
+        color: var(--primary-color, #00c8e3);
+        border: 1px solid #e0e0e0;
         padding: 0.5rem 1rem;
-        border-radius: 4px;
+        border-radius: 6px;
         text-decoration: none;
         transition: all 0.3s ease;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        font-weight: 500;
     }
 
     .action-btn:hover {
-        background: rgba(0, 200, 227, 0.2);
+        background: var(--primary-color, #00c8e3);
+        color: #fff;
+        border-color: var(--primary-color, #00c8e3);
     }
 
     .delete-btn {
-        background: rgba(220, 53, 69, 0.1);
-        color: rgb(220, 53, 69);
-        border: 1px solid rgba(220, 53, 69, 0.2);
+        background: #fff0f0;
+        color: #dc3545;
+        border: 1px solid #f5c2c7;
     }
 
     .delete-btn:hover {
-        background: rgba(220, 53, 69, 0.2);
+        background: #dc3545;
+        color: #fff;
+        border-color: #dc3545;
     }
 
     .post-content {
         padding: 1.5rem;
-        color: #e0e0e0;
+        color: #222;
         line-height: 1.7;
         font-size: 1.05rem;
     }
@@ -134,55 +142,61 @@
     .comments-title {
         font-size: 1.5rem;
         font-weight: 600;
-        color: #fff;
+        color: #181818;
     }
 
     .comment-box {
-        background: rgba(20, 20, 20, 0.4);
-        border-radius: 8px;
+        background: #fff;
+        border-radius: 16px;
         overflow: hidden;
         margin-top: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #ececec;
     }
 
     .comment-form {
         padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid #ececec;
     }
 
     .comment-input {
         width: 100%;
-        background: rgba(40, 40, 40, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        background: #f4ede7;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
         padding: 1rem;
-        color: #fff;
+        color: #181818;
         resize: vertical;
         min-height: 100px;
         margin-bottom: 1rem;
+        font-size: 1rem;
     }
 
     .comment-input:focus {
         outline: none;
-        border-color: rgba(0, 200, 227, 0.4);
+        border-color: var(--primary-color, #00c8e3);
+        box-shadow: 0 0 0 2px rgba(0, 200, 227, 0.08);
+        background: #fff;
     }
 
     .comment-submit {
-        background: rgb(0, 200, 227);
-        color: #000;
+        background: var(--primary-color, #00c8e3);
+        color: #fff;
         padding: 0.75rem 1.5rem;
-        border-radius: 4px;
+        border-radius: 6px;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.3s ease;
         border: none;
-        font-size: 0.9rem;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         cursor: pointer;
     }
 
     .comment-submit:hover {
-        background: rgb(0, 220, 247);
+        background: var(--primary-hover, #00a7bf);
+        color: #fff;
     }
 
     .comment-list {
@@ -193,7 +207,7 @@
 
     .comment-item {
         padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid #ececec;
     }
 
     .comment-item:last-child {
@@ -216,38 +230,39 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: rgba(0, 200, 227, 0.2);
+        background: var(--primary-color, #00c8e3);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.2rem;
-        color: rgb(0, 200, 227);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .comment-author {
         font-weight: 600;
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
     }
 
     .comment-time {
-        color: #666;
+        color: #888;
         font-size: 0.85rem;
     }
 
     .comment-text {
-        color: #e0e0e0;
+        color: #222;
         line-height: 1.6;
     }
 
     .no-comments {
         padding: 2rem;
         text-align: center;
-        color: #666;
+        color: #888;
     }
 
     .no-comments i {
         font-size: 3rem;
-        color: rgb(0, 200, 227);
+        color: var(--primary-color, #00c8e3);
         margin-bottom: 1rem;
     }
 
@@ -358,4 +373,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection
