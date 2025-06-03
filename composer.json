@@ -13,7 +13,7 @@
         "conedevelopment/bazar": "^1.2",
         "jwilsson/spotify-web-api-php": "^6.2",
         "laravel/cashier-paddle": "^2.5",
-        "laravel/framework": "^12.0",
+        "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "stripe/stripe-php": "^17.1"
