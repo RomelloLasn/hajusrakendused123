@@ -15,13 +15,12 @@ hosts:
 tasks:
 
   opcache:clear:
-    - run: killall php84-cgi || true
+    - run: killall php-cgi83 || true  # Changed from php84-cgi to php-cgi83
 
   deploy:
     - "deploy:prepare"
     - "deploy:vendors"
     - "artisan:storage:link"
-    
     - "deploy:publish"
 
 after:
