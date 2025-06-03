@@ -1,4 +1,4 @@
-{{-- filepath: resources/views/home.blade.php --}}
+
 @extends('layouts.app')
 
 @section('title', 'Home - Hajusrakendused')
@@ -8,7 +8,7 @@
     body {
         background: #f4ede7 !important;
     }
-    /* Remove the portfolio-nav (red arrow) */
+    
     .rakendused-card {
         background: transparent;
         border-radius: 16px;

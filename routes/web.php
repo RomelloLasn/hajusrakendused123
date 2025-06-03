@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MarkerController;
 use App\Http\Controllers\BlogController;
@@ -15,6 +16,13 @@ use App\Http\Controllers\ApiViewerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\SpotifyController;
+use App\Http\Controllers\NewsController;
+
+// Show news at /monsters
+Route::get('/monsters', [NewsController::class, 'index'])->name('monsters.index');
+
+// Optional: keep /news route if you want
+Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 
 Route::get('/', function () {
     return view('home');
@@ -50,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/payment/create-intent', [PaymentController::class, 'createPaymentIntent'])->name('payment.create-intent');
-    Route::post('/payment/success', [PaymentController::class, 'handlePaymentSuccess'])->name('payment.success');
+    Route::get('/payment/success', [PaymentController::class, 'handlePaymentSuccess'])->name('payment.success');
     Route::post('/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
     
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
@@ -77,11 +85,7 @@ Route::middleware(['auth'])->get('/test/success', function() {
 Route::get('/weather', [WeatherController::class, 'index'])->name('weather.index');
 Route::get('/weather/get', [WeatherController::class, 'getWeather'])->name('weather.get');
 
-Route::get('/monsters', [MonsterPageController::class, 'index'])->name('monsters.index');
-Route::post('/monsters', [MonsterPageController::class, 'store'])->name('monsters.store');
-Route::delete('/monsters/{monster}', [MonsterPageController::class, 'destroy'])
-    ->middleware(['auth', 'admin'])
-    ->name('monsters.destroy');
+
 
 Route::get('/api-viewer', [ApiViewerController::class, 'index'])->name('api-viewer.index');
 
@@ -91,4 +95,3 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 Route::get('/spotify', [SpotifyController::class, 'index'])->name('spotify.index');
 Route::get('/spotify/callback', [SpotifyController::class, 'callback'])->name('spotify.callback');
 Route::post('/spotify/add-tracks', [SpotifyController::class, 'addTracks'])->name('spotify.add-tracks');
-    

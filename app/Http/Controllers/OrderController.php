@@ -76,31 +76,17 @@ class OrderController extends Controller
         } elseif (session()->has('dummy_order')) {
             $order = (object) session()->get('dummy_order');
         } else {
-            $fallbackOrder = (object) [
-                'id' => rand(1000, 9999),
-                'email' => 'customer@example.com',
-                'first_name' => 'Valued',
-                'last_name' => 'Customer',
-                'phone' => '123-456-7890',
-                'payment_method' => 'card',
-                'total_amount' => 0.00,
-                'status' => 'completed',
-                'created_at' => now()
-            ];
             
-            $sessionId = $this->getCartSessionId();
-            $cart = Cart::where('session_id', $sessionId)->first();
-            if ($cart && !$cart->items->isEmpty()) {
-                $fallbackOrder->total_amount = $cart->items->sum(function ($item) {
-                    return $item->product->price * $item->quantity;
-                });
-                
-                $cart->items()->delete();
-                $cart->delete();
-                session()->forget('cart_session_id');
-            }
-            
-            $order = $fallbackOrder;
+            return redirect()->route('cart.index')->with('error', 'No order information found. Please try again.');
+        }
+        
+        
+        $sessionId = $this->getCartSessionId();
+        $cart = Cart::where('session_id', $sessionId)->first();
+        if ($cart) {
+            $cart->items()->delete();
+            $cart->delete();
+            session()->forget('cart_session_id');
         }
         
         return view('shop.orders.success', compact('order'));

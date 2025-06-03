@@ -11,59 +11,48 @@ class ProductSeeder extends Seeder
     {
         $products = [
             [
-                'name' => 'Mario',
-                'description' => 'The main hero of the Mushroom Kingdom',
+                'name' => 'assassino cappuchino',
+                'description' => 'Secret assassin',
                 'price' => 49.99,
-                'image' => '/images/products/mario.jpg'
+                'image' => '/images/products/assassinocappuchino.jpg'
             ],
             [
-                'name' => 'Luigi',
-                'description' => 'Marios taller brother',
+                'name' => 'ballerina cappuchina',
+                'description' => 'dance service',
                 'price' => 129.99,
-                'image' => '/images/products/luigi.jpg'
+                'image' => '/images/products/ballerinacappuchina.jpg'
             ],
             [
-                'name' => 'Princess Peach',
-                'description' => 'The ruler of the Mushroom Kingdom',
+                'name' => 'bombardiro crocodilo',
+                'description' => 'bomb a country',
                 'price' => 79.99,
-                'image' => '/images/products/peach.jpg'
+                'image' => '/images/products/bombardirocrocodilo.jpg'
             ],
             [
-                'name' => 'Bowser',
-                'description' => 'King of the Koopas',
+                'name' => 'brrbrr batapim',
+                'description' => 'toe cleaning',
                 'price' => 299.99,
-                'image' => '/images/products/bowser.jpg'
+                'image' => '/images/products/brrbrrbatapim.jpg'
             ],
             [
-                'name' => 'Yoshi',
-                'description' => 'A friendly dinosaur',
+                'name' => 'piccionemachina',
+                'description' => 'personal mechanic',
                 'price' => 199.99,
-                'image' => '/images/products/yoshi.jpg'
+                'image' => '/images/products/piccionemachina.jpg'
             ],
             [
-                'name' => 'Toad',
-                'description' => 'A loyal servant of Princess Peach',
+                'name' => 'Tung tung tung sahur',
+                'description' => 'wood ',
                 'price' => 29.99,
-                'image' => '/images/products/toad.jpg'
+                'image' => '/images/products/sahur.jpg'
             ],
             [
-                'name' => 'Wario',
-                'description' => 'Marios greedy rival',
+                'name' => 'Trallalero trallalla',
+                'description' => 'swimming tutorials',
                 'price' => 89.99,
-                'image' => '/images/products/wario.jpg'
+                'image' => '/images/products/trallalera.jpg'
             ],
-            [
-                'name' => 'Kirby',
-                'description' => 'Fatass jigglypuff',
-                'price' => 69.99,
-                'image' => '/images/products/kirby.jpg'
-            ],
-            [
-                'name' => 'Gen',
-                'description' => 'minu isand gen',
-                'price' => 999.99,
-                'image' => '/images/products/gen.jpg'
-            ]
+           
         ];
 
         foreach ($products as $product) {

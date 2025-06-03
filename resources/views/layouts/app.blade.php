@@ -348,7 +348,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ Request::is('monsters*') ? 'active' : '' }}" href="{{ route('monsters.index') }}">
-                            Monsters API
+                            NEWS API
                         </a>
                     </li>
                     <li class="nav-item">
@@ -356,11 +356,7 @@
                             API View
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ Request::is('spotify*') ? 'active' : '' }}" href="{{ route('spotify.index') }}">
-                            <i class="bi bi-spotify me-1"></i>Spotify
-                        </a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link {{ Request::is('products*') ? 'active' : '' }}" href="{{ route('products.index') }}">
                             Shop

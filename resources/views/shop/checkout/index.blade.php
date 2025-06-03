@@ -86,22 +86,16 @@
                             </div>
                         </div>
 
-                        <hr class="my-4">
-
-                        <h5 class="card-title mb-3">Payment Details</h5>
-                        <div class="mb-4">
-                            <p class="text-muted small mb-2">Enter your card information below:</p>
-                            <div id="card-element" class="form-control p-3" style="height: auto; min-height: 3em;"></div>
-                            <div id="card-errors" class="text-danger mt-2"></div>
-                            <div class="mt-2 text-muted small">
-                                <i class="bi bi-shield-lock me-1"></i> Your payment information is secured with Stripe
-                            </div>
-                        </div>
+                        <div id="payment-errors" class="alert alert-danger d-none mb-4"></div>
                         
                         <button type="submit" id="submit-button" class="btn btn-primary btn-lg w-100">
-                            <span id="button-text">Pay ${{ number_format($total, 2) }}</span>
+                            <span id="button-text">Proceed to Payment</span>
                             <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                         </button>
+                        
+                        <div class="mt-3 text-center text-muted small">
+                            <i class="bi bi-shield-lock me-1"></i> Your payment will be securely processed by Stripe
+                        </div>
                     </form>
                 </div>
             </div>
@@ -112,121 +106,87 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script src="{{ asset('js/stripe-helper.js') }}"></script>
 <script>
-    const stripe = Stripe('{{ config('services.stripe.key') }}');
-    const elements = stripe.elements();
-    
-    const style = {
-        base: {
-            fontSize: '16px',
-            color: '#32325d',
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ensure the Stripe key is not empty
+        const stripeKey = '{{ config('services.stripe.key') }}';
+        
+        if (!stripeKey) {
+            console.error('Stripe publishable key is missing');
+            displayError('payment-errors', 'Payment configuration error. Please contact support.');
+            return;
         }
-    };
-    
-    const card = elements.create('card', {
-        style: style,
-        hidePostalCode: true
-    });
-    card.mount('#card-element');
-    
-    card.addEventListener('change', function(event) {
-        const displayError = document.getElementById('card-errors');
-        if (event.error) {
-            displayError.textContent = event.error.message;
-        } else {
-            displayError.textContent = '';
-        }
-    });
-    
-    const form = document.getElementById('payment-form');
-    const submitButton = document.getElementById('submit-button');
-    const buttonText = document.getElementById('button-text');
-    const spinner = document.getElementById('spinner');
-    const originalButtonText = buttonText.textContent;
-    
-    form.addEventListener('submit', async function(event) {
-        event.preventDefault();
         
-        startProcessing('submit-button', 'spinner', 'button-text', 'Processing...');
+        const stripe = Stripe(stripeKey);
         
-        const customerData = {
-            first_name: document.getElementById('first_name').value,
-            last_name: document.getElementById('last_name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            amount: {{ $total }}
-        };
+        const form = document.getElementById('payment-form');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+        const originalButtonText = buttonText.textContent;
         
-        try {
-            const response = await fetch('{{ route('payment.create-intent') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify(customerData)
-            });
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
             
-            const data = await response.json();
+            // Clear any previous errors
+            clearError('payment-errors');
             
-            if (data.error) {
-                displayError('card-errors', data.error);
-                stopProcessing('submit-button', 'spinner', 'button-text', originalButtonText);
+            // Validate form
+            const firstName = document.getElementById('first_name').value;
+            const lastName = document.getElementById('last_name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            
+            if (!firstName || !lastName || !email || !phone) {
+                displayError('payment-errors', 'Please fill out all required fields');
                 return;
             }
             
-            const result = await stripe.confirmCardPayment(data.clientSecret, {
-                payment_method: {
-                    card: card,
-                    billing_details: {
-                        name: customerData.first_name + ' ' + customerData.last_name,
-                        email: customerData.email,
-                        phone: customerData.phone
-                    }
-                }
-            });
+            startProcessing('submit-button', 'spinner', 'button-text', 'Processing...');
             
-            if (result.error) {
-                displayError('card-errors', result.error.message);
-                stopProcessing('submit-button', 'spinner', 'button-text', originalButtonText);
-            } else {
-                console.log('Payment result:', result);
-                console.log('Payment status:', result.paymentIntent.status);
+            const customerData = {
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                phone: phone,
+                amount: {{ $total }}
+            };
+            
+            try {
+                const response = await fetch('{{ route('payment.create-intent') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(customerData)
+                });
                 
-                buttonText.textContent = "Payment successful! Processing order...";
-                
-                if (result.paymentIntent.status === 'succeeded') {
-                    const orderForm = new FormData();
-                    orderForm.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-                    orderForm.append('first_name', customerData.first_name);
-                    orderForm.append('last_name', customerData.last_name);
-                    orderForm.append('email', customerData.email);
-                    orderForm.append('phone', customerData.phone);
-                    orderForm.append('payment_method', 'card');
-                    orderForm.append('payment_intent_id', result.paymentIntent.id);
-                    
-                    try {
-                        const orderResponse = await fetch('{{ route('payment.process') }}', {
-                            method: 'POST',
-                            body: orderForm
-                        });
-                        
-                        console.log('Order response status:', orderResponse.status);
-                        
-                        window.location = '{{ route('orders.success') }}';
-                    } catch (orderError) {
-                        console.error('Error submitting order:', orderError);
-                        window.location = '{{ route('orders.success') }}';
-                    }
-                } else {
-                    displayError('card-errors', 'Payment was not successful. Please try again.');
-                    stopProcessing('submit-button', 'spinner', 'button-text', originalButtonText);
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('Error parsing JSON response:', e);
+                    throw new Error('Could not parse server response');
                 }
+                
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || 'Failed to create payment session');
+                }
+                
+                // Redirect to Stripe Checkout
+                if (data.url) {
+                    console.log('Redirecting to Stripe Checkout: ', data.url);
+                    window.location.href = data.url;
+                } else {
+                    throw new Error('No checkout URL received from server');
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                displayError('payment-errors', error.message || 'An error occurred. Please try again.');
+                stopProcessing('submit-button', 'spinner', 'button-text', originalButtonText);
             }
-        } catch (error) {
-            console.error('Payment error:', error);
-            displayError('card-errors', 'An error occurred. Please try again.');
-            stopProcessing('submit-button', 'spinner', 'button-text', originalButtonText);
-        }
+        });
     });
 </script>
 @endsection 
