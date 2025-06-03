@@ -8,7 +8,7 @@ config:
 hosts:
   stage:
     hostname: ''
-    http_user:
+    http_user: ''
     remote_user: 
     deploy_path: ''
 
