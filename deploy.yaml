@@ -2,15 +2,15 @@ import:
   - recipe/laravel.php
 
 config:
-  repository: ''
+  repository: 'git@github.com:RomelloLasn/hajusrakendused123.git'
   keep_releases: 2
 
 hosts:
   stage:
-    hostname: ''
-    http_user: ''
-    remote_user: 
-    deploy_path: ''
+    hostname: 'tak22lasn.itmajakas.ee'
+    http_user: virt118441
+    remote_user: virt118441
+    deploy_path: '/data01/virt118441/domeenid/www.tak22lasn.itmajakas.ee/rakendused1'
 
 tasks:
 
@@ -22,7 +22,6 @@ tasks:
     - "deploy:vendors"
     - "artisan:storage:link"
     - "artisan:optimize:clear"
-    - "artisan:optimize"
     - "deploy:publish"
 
 after:
