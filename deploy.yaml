@@ -41,10 +41,16 @@ tasks:
     
   fix:htaccess:
     - run: 'cp {{release_path}}/.htaccess.zone {{deploy_path}}/.htaccess'
+    
+  setup:database:
+    - run: 'mkdir -p {{deploy_path}}/shared/database'
+    - run: 'touch {{deploy_path}}/shared/database/database.sqlite'
+    - run: 'chmod 777 {{deploy_path}}/shared/database/database.sqlite'
 
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
+    - 'setup:database'
     - 'artisan:storage:link'
     - 'artisan:config:cache'
     - 'artisan:route:clear'
