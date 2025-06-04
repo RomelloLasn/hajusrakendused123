@@ -1,0 +1,6 @@
+AddType application/x-httpd-php83 .php
+
+DirectoryIndex public/index.php
+RewriteEngine On
+RewriteRule ^$ public/ [L]
+RewriteRule (.*) public/$1 [L]
