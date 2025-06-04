@@ -1,0 +1,153 @@
+name: Deploy to Zone.ee
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_PATH: ~/domeenid/www.tak22lasn.itmajakas.ee/rakendused1
+      SHARED_PATH: ~/domeenid/www.tak22lasn.itmajakas.ee/shared
+      APP_URL: https://rakendused1.tak22lasn.itmajakas.ee
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, intl, pdo_sqlite, zip, curl
+        
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+        
+    - name: Setup dependencies
+      run: composer install --no-dev --optimize-autoloader
+        
+    - name: Build assets
+      run: |
+        npm ci
+        npm run build
+      
+    - name: Deploy to Zone.ee
+      env:
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+      run: |
+        echo "Deploying to Zone.ee..."
+        
+        # Create deployment directory with timestamp
+        DEPLOY_DIR=deploy_$(date +%Y%m%d_%H%M%S)
+        mkdir -p $DEPLOY_DIR
+        
+        # Copy files to deployment directory
+        rsync -av --exclude='.git' \
+                  --exclude='.github' \
+                  --exclude='node_modules' \
+                  --exclude='tests' \
+                  --exclude='vendor' \
+                  --exclude='$DEPLOY_DIR' \
+                  --exclude='.env*' \
+                  ./ $DEPLOY_DIR/
+        
+        # Create .htaccess file for Zone.ee
+        echo 'Options +FollowSymLinks -Indexes' > $DEPLOY_DIR/.htaccess
+        echo 'AddType application/x-httpd-php83 .php' >> $DEPLOY_DIR/.htaccess
+        echo 'RewriteEngine On' >> $DEPLOY_DIR/.htaccess
+        echo 'RewriteCond %{REQUEST_URI} !^public' >> $DEPLOY_DIR/.htaccess
+        echo 'RewriteRule ^(.*)$ public/$1 [L]' >> $DEPLOY_DIR/.htaccess
+        
+        # Update APP_URL in .env.example to use the correct domain
+        if [ -f ".env.example" ]; then
+          sed -i 's#APP_URL=.*#APP_URL=https://rakendused1.tak22lasn.itmajakas.ee#' .env.example
+        fi
+        
+        # Prepare the release
+        cd $DEPLOY_DIR
+        php artisan optimize:clear
+        php artisan config:clear
+        php artisan cache:clear
+        php artisan view:clear
+        php artisan route:clear
+        
+        # Upload to server
+        cd ..
+        tar -czf deployment.tar.gz $DEPLOY_DIR
+        scp deployment.tar.gz ${SSH_USER}@${SSH_HOST}:~/
+        
+        # Execute deployment on server
+        echo "Setting up remote deployment..."
+        ssh ${SSH_USER}@${SSH_HOST} "
+          echo 'Starting deployment process...' &&
+          cd ~/ &&
+          tar -xzf deployment.tar.gz &&
+          rm -f deployment.tar.gz &&
+          
+          # Create shared directories if they don't exist
+          echo 'Setting up shared directories...' &&
+          mkdir -p ${SHARED_PATH}/storage &&
+          mkdir -p ${SHARED_PATH}/database &&
+          
+          # Ensure SQLite database exists
+          if [ ! -f ${SHARED_PATH}/database/database.sqlite ]; then
+            touch ${SHARED_PATH}/database/database.sqlite &&
+            chmod 777 ${SHARED_PATH}/database/database.sqlite
+          fi &&
+          
+          # Backup current deployment if it exists
+          DEPLOY_PATH=$DEPLOY_BASE/rakendused1
+          if [ -L \$DEPLOY_PATH ]; then
+            current=\$(readlink -f \$DEPLOY_PATH)
+            mv \$current $DEPLOY_BASE/previous_deployment_$(date +%Y%m%d_%H%M%S)
+          fi
+          
+          # Set up new deployment
+          echo 'Setting up new deployment...' &&
+          cd ~/$DEPLOY_DIR &&
+          ln -sf ${SHARED_PATH}/storage storage &&
+          ln -sf ${SHARED_PATH}/.env .env &&
+          ln -sf ${SHARED_PATH}/database/database.sqlite database/database.sqlite &&
+          
+          # Ensure we have all required directories
+          mkdir -p bootstrap/cache &&
+          
+          # Set permissions
+          chmod -R 775 storage &&
+          mkdir -p storage/framework/sessions &&
+          mkdir -p storage/framework/views &&
+          mkdir -p storage/framework/cache &&
+          chmod -R 775 storage/framework/sessions &&
+          chmod -R 775 storage/framework/views &&
+          chmod -R 775 storage/framework/cache &&
+          chmod -R 775 bootstrap/cache &&
+          
+          # Run migrations
+          php artisan migrate --force &&
+          
+          # Clear any existing optimizations
+          php artisan optimize:clear &&
+          
+          # Make the deployment live
+          echo 'Making deployment live...' &&
+          cd ~/ &&
+          if [ -L ${DEPLOY_PATH} ]; then
+            echo 'Backing up current deployment...' &&
+            current=\$(readlink -f ${DEPLOY_PATH}) &&
+            mv \$current ${DEPLOY_PATH}_backup_\$(date +%Y%m%d_%H%M%S)
+          fi &&
+          
+          # Create the symlink to make the new deployment live
+          mkdir -p \$(dirname ${DEPLOY_PATH}) &&
+          ln -sfn ~/$DEPLOY_DIR ${DEPLOY_PATH} &&
+          
+          echo 'Deployment complete! Application is now live.'
+        "

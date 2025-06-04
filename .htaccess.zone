@@ -1,6 +1,27 @@
+Options +FollowSymLinks -Indexes
 AddType application/x-httpd-php83 .php
+
+# PHP Error handling
+php_flag display_errors on
+php_value error_reporting E_ALL
+php_flag log_errors on
+php_value error_log /home/romello/rakendused1/storage/logs/php_errors.log
+
+# PHP Settings
+php_value memory_limit 256M
+php_value upload_max_filesize 64M
+php_value post_max_size 64M
+php_value max_execution_time 300
 
 DirectoryIndex public/index.php
 RewriteEngine On
-RewriteRule ^$ public/ [L]
-RewriteRule (.*) public/$1 [L]
+RewriteBase /
+
+# Handle Authorization Header
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Redirect all requests to public folder
+RewriteRule ^$ public/index.php [L]
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]

@@ -3,102 +3,96 @@
 namespace App\Services;
 
 use Stripe\Stripe;
-use Stripe\PaymentIntent;
-use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
+use Illuminate\Support\Facades\Log;
 
 class StripeService
 {
     public function __construct()
     {
-        // Get the API key directly from .env for reliability
-        $apiKey = env('STRIPE_SECRET', config('services.stripe.secret'));
-        
-        // Debug logging to troubleshoot key loading issues
-        \Illuminate\Support\Facades\Log::debug('Stripe API Key Check', [
-            'env_key_length' => env('STRIPE_SECRET') ? strlen(env('STRIPE_SECRET')) : 0,
-            'config_key_length' => config('services.stripe.secret') ? strlen(config('services.stripe.secret')) : 0,
-            'final_key_length' => $apiKey ? strlen($apiKey) : 0,
-            'env_key_start' => env('STRIPE_SECRET') ? substr(env('STRIPE_SECRET'), 0, 4) : 'none',
-            'config_key_start' => config('services.stripe.secret') ? substr(config('services.stripe.secret'), 0, 4) : 'none',
-            'final_key_start' => $apiKey ? substr($apiKey, 0, 4) : 'none'
-        ]);
-        
-        // Check if key is valid before setting
-        if (empty($apiKey) || strlen($apiKey) < 10) {
-            \Illuminate\Support\Facades\Log::error('Invalid Stripe API key detected');
-            throw new \Exception('Invalid API Key provided. Check your STRIPE_SECRET environment variable.');
-        }
-        
-        Stripe::setApiKey($apiKey);
-    }
-
-    public function createPaymentIntent($amount, $currency = 'eur')
-    {
         try {
-            return PaymentIntent::create([
-                'amount' => $amount * 100,
-                'currency' => $currency,
-                'automatic_payment_methods' => [
-                    'enabled' => true,
-                ],
-            ]);
-        } catch (ApiErrorException $e) {
-            throw $e;
-        }
-    }
-    
-    public function createCheckoutSession($items, $total, $customerInfo)
-    {
-        try {
-            $lineItems = [];
+            // Get the API key directly from env with fallback to config
+            $apiKey = trim(env('STRIPE_SECRET', config('services.stripe.secret')));
             
-            foreach ($items as $item) {
-                $lineItems[] = [
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => $item->product->name,
-                        ],
-                        'unit_amount' => $item->product->price * 100,
-                    ],
-                    'quantity' => $item->quantity,
-                ];
+            // Debug logging for stripe key
+            $keyLength = strlen($apiKey);
+            $keyStart = substr($apiKey, 0, 4);
+            
+            Log::debug('Stripe API Key Check', [
+                'env_key_length' => $keyLength,
+                'config_key_length' => strlen(config('services.stripe.secret')),
+                'final_key_length' => $keyLength,
+                'env_key_start' => $keyStart,
+                'config_key_start' => substr(config('services.stripe.secret'), 0, 4),
+                'final_key_start' => $keyStart
+            ]);
+            
+            // Basic validation check
+            if (empty($apiKey) || $keyLength < 10) {
+                Log::error('Invalid Stripe API key detected');
+                throw new \Exception('Invalid API Key provided. Check your STRIPE_SECRET environment variable.');
             }
             
-            return Session::create([
+            // Set the API key for Stripe 
+            Stripe::setApiKey($apiKey);
+            
+        } catch (\Exception $e) {
+            Log::error('Error initializing Stripe: ' . $e->getMessage());
+            // Don't throw here - let the specific methods handle errors
+        }
+    }
+
+    public function createCheckoutSession($lineItems, $successUrl, $cancelUrl)
+    {
+        try {
+            // Create the checkout session
+            $session = \Stripe\Checkout\Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => $lineItems,
                 'mode' => 'payment',
-                'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('checkout.index'),
-                'customer_email' => $customerInfo['email'] ?? null,
-                'metadata' => [
-                    'first_name' => $customerInfo['first_name'] ?? '',
-                    'last_name' => $customerInfo['last_name'] ?? '',
-                    'phone' => $customerInfo['phone'] ?? '',
-                ],
+                'success_url' => $successUrl,
+                'cancel_url' => $cancelUrl,
             ]);
+            
+            return $session;
+            
         } catch (ApiErrorException $e) {
-            throw $e;
+            Log::error('Error creating checkout session: ' . $e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
-    public function retrievePaymentIntent($paymentIntentId)
+    public function createPaymentIntent($amount, $currency = 'eur', $paymentMethodTypes = ['card'])
     {
         try {
-            return PaymentIntent::retrieve($paymentIntentId);
+            // Convert amount to cents for Stripe (e.g. 10.00 EUR → 1000)
+            $amountInCents = $amount * 100;
+            
+            // Create a PaymentIntent
+            $intent = \Stripe\PaymentIntent::create([
+                'amount' => $amountInCents,
+                'currency' => $currency,
+                'payment_method_types' => $paymentMethodTypes,
+            ]);
+            
+            return $intent;
+            
         } catch (ApiErrorException $e) {
-            throw $e;
+            Log::error('Stripe API Error: ' . $e->getMessage());
+            throw new \Exception("Payment processing error: " . $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('General error with payment intent: ' . $e->getMessage());
+            throw new \Exception("Payment processing error: " . $e->getMessage());
         }
     }
     
-    public function retrieveCheckoutSession($sessionId)
+    public function retrievePaymentIntent($paymentIntentId)
     {
         try {
-            return Session::retrieve($sessionId);
+            return \Stripe\PaymentIntent::retrieve($paymentIntentId);
         } catch (ApiErrorException $e) {
-            throw $e;
+            Log::error('Error retrieving payment intent: ' . $e->getMessage());
+            throw new \Exception("Payment not found: " . $e->getMessage());
         }
     }
-} 
+}
