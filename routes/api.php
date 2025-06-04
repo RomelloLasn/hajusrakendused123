@@ -26,4 +26,10 @@ Route::get('/monsters', [MonsterController::class, 'index']);
 Route::get('/monsters/{id}', [MonsterController::class, 'show']);
 
 // News API resource routes
-Route::apiResource('news', NewsController::class);
+Route::apiResource('news', NewsController::class)->names([
+    'index' => 'api.news.index',
+    'store' => 'api.news.store',
+    'show' => 'api.news.show',
+    'update' => 'api.news.update',
+    'destroy' => 'api.news.destroy',
+]);

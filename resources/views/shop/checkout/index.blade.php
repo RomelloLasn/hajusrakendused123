@@ -107,8 +107,16 @@
 <script src="{{ asset('js/stripe-helper.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Ensure the Stripe key is not empty
-        const stripeKey = '{{ config('services.stripe.key') }}';
+        // Try multiple methods to get the Stripe key
+        const stripeKey = '{{ env('STRIPE_KEY', config('services.stripe.key')) }}';
+        console.log('Stripe key length:', stripeKey ? stripeKey.length : 0);
+        
+        // Display key status on the page for debugging
+        const errorDiv = document.getElementById('payment-errors');
+        errorDiv.classList.remove('d-none');
+        errorDiv.classList.remove('alert-danger');
+        errorDiv.classList.add('alert-info');
+        errorDiv.textContent = 'Stripe key status: ' + (stripeKey && stripeKey.length > 0 ? 'Found (' + stripeKey.substr(0, 7) + '...)' : 'Missing');
         
         if (!stripeKey) {
             console.error('Stripe publishable key is missing');
@@ -152,7 +160,8 @@
             };
             
             try {
-                const response = await fetch('{{ route('payment.create-intent') }}', {
+                // Use URL function for reliability
+                const response = await fetch('{{ url('/payment/create-intent') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

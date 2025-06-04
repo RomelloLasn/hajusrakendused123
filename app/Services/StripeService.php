@@ -11,7 +11,26 @@ class StripeService
 {
     public function __construct()
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
+        // Get the API key directly from .env for reliability
+        $apiKey = env('STRIPE_SECRET', config('services.stripe.secret'));
+        
+        // Debug logging to troubleshoot key loading issues
+        \Illuminate\Support\Facades\Log::debug('Stripe API Key Check', [
+            'env_key_length' => env('STRIPE_SECRET') ? strlen(env('STRIPE_SECRET')) : 0,
+            'config_key_length' => config('services.stripe.secret') ? strlen(config('services.stripe.secret')) : 0,
+            'final_key_length' => $apiKey ? strlen($apiKey) : 0,
+            'env_key_start' => env('STRIPE_SECRET') ? substr(env('STRIPE_SECRET'), 0, 4) : 'none',
+            'config_key_start' => config('services.stripe.secret') ? substr(config('services.stripe.secret'), 0, 4) : 'none',
+            'final_key_start' => $apiKey ? substr($apiKey, 0, 4) : 'none'
+        ]);
+        
+        // Check if key is valid before setting
+        if (empty($apiKey) || strlen($apiKey) < 10) {
+            \Illuminate\Support\Facades\Log::error('Invalid Stripe API key detected');
+            throw new \Exception('Invalid API Key provided. Check your STRIPE_SECRET environment variable.');
+        }
+        
+        Stripe::setApiKey($apiKey);
     }
 
     public function createPaymentIntent($amount, $currency = 'eur')

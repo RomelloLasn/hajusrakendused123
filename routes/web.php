@@ -17,12 +17,17 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\SpotifyController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\StripeDebugController;
 
-// Show news at /monsters
-Route::get('/monsters', [NewsController::class, 'index'])->name('monsters.index');
+// Show news at /monsters (using dedicated monsters method)
+Route::get('/monsters', [NewsController::class, 'monsters'])->name('monsters.index');
 
-// Optional: keep /news route if you want
-Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+// News routes for form handling (using index method)
+Route::get('/news', [NewsController::class, 'index'])->name('web.news.index');
+Route::post('/news', [NewsController::class, 'store'])->name('web.news.store');
+Route::get('/news/{news}', [NewsController::class, 'show'])->name('web.news.show');
+Route::put('/news/{news}', [NewsController::class, 'update'])->name('web.news.update');
+Route::delete('/news/{news}', [NewsController::class, 'destroy'])->name('web.news.destroy');
 
 Route::get('/', function () {
     return view('home');
@@ -95,3 +100,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 Route::get('/spotify', [SpotifyController::class, 'index'])->name('spotify.index');
 Route::get('/spotify/callback', [SpotifyController::class, 'callback'])->name('spotify.callback');
 Route::post('/spotify/add-tracks', [SpotifyController::class, 'addTracks'])->name('spotify.add-tracks');
+
+// Debug routes for troubleshooting
+Route::get('/stripe/debug', [StripeDebugController::class, 'testStripeKeys'])->name('stripe.debug');

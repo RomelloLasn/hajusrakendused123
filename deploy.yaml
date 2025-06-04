@@ -46,19 +46,24 @@ tasks:
     - run: 'mkdir -p {{deploy_path}}/shared/database'
     - run: 'touch {{deploy_path}}/shared/database/database.sqlite'
     - run: 'chmod 777 {{deploy_path}}/shared/database/database.sqlite'
+    
+  verify:stripe-keys:
+    - run: "echo 'Verifying Stripe keys...'"
+    - run: 'cd {{release_path}} && {{bin/php}} artisan tinker --execute="echo \"STRIPE KEY: \".env(\"STRIPE_KEY\").PHP_EOL.\"STRIPE SECRET: \".substr(env(\"STRIPE_SECRET\"), 0, 5).\"...\".PHP_EOL;"'
 
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
     - 'setup:database'
     - 'artisan:storage:link'
-    - 'artisan:config:cache'
+    - 'artisan:config:clear'  # Clear config cache first
     - 'artisan:route:clear'
     # Route caching disabled due to conflicts
     # - 'artisan:route:cache'
     - 'artisan:view:cache'
     - 'artisan:migrate'
     - 'artisan:key:generate'
+    - 'verify:stripe-keys'  # Verify Stripe keys are loaded
     # Uncomment if you have frontend assets to build
     # - 'build:assets'
     - 'fix:htaccess'

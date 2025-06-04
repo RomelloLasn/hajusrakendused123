@@ -35,6 +35,12 @@ class PaymentController extends Controller
         ]);
 
         try {
+            // First, check if Stripe keys are properly configured
+            if (empty(env('STRIPE_SECRET'))) {
+                Log::error('Stripe secret key is not set in environment');
+                return response()->json(['error' => 'Payment processing is not properly configured'], 500);
+            }
+            
             $sessionId = $this->getCartSessionId();
             $cart = Cart::where('session_id', $sessionId)->first();
             
@@ -51,16 +57,21 @@ class PaymentController extends Controller
             
             session()->put('checkout_customer_info', $customerInfo);
             
-            $checkoutSession = $this->stripeService->createCheckoutSession(
-                $cart->items, 
-                $request->amount,
-                $customerInfo
-            );
-            
-            return response()->json([
-                'id' => $checkoutSession->id,
-                'url' => $checkoutSession->url,
-            ]);
+            try {
+                $checkoutSession = $this->stripeService->createCheckoutSession(
+                    $cart->items, 
+                    $request->amount,
+                    $customerInfo
+                );
+                
+                return response()->json([
+                    'id' => $checkoutSession->id,
+                    'url' => $checkoutSession->url,
+                ]);
+            } catch (\Stripe\Exception\ApiErrorException $stripeError) {
+                Log::error('Stripe API Error: ' . $stripeError->getMessage());
+                return response()->json(['error' => 'Payment processing error: ' . $stripeError->getMessage()], 500);
+            }
         } catch (\Exception $e) {
             Log::error('Error creating checkout session: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);

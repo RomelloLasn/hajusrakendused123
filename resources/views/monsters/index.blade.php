@@ -26,7 +26,7 @@
             </div>
         @endif
 
-        <form action="{{ route('news.store') }}" method="POST">
+        <form action="{{ route('web.news.store') }}" method="POST">
             @csrf
             <div class="row g-2">
                 <div class="col-md-6 mb-2">
