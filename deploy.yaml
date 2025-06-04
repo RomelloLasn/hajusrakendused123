@@ -4,25 +4,31 @@ import:
 config:
   repository: 'git@github.com:RomelloLasn/hajusrakendused123.git'
   keep_releases: 2
+  shared_files:
+    - database/database.sqlite
+  shared_dirs:
+    - storage
 
 hosts:
   stage:
     hostname: 'tak22lasn.itmajakas.ee'
     http_user: virt118441
     remote_user: virt118441
-    deploy_path: '/data01/virt118441/domeenid/www.tak22lasn.itmajakas.ee/rakendused1'
+    deploy_path: '~/domeenid/www.tak22lasn.itmajakas.ee/rakendused1'
 
 tasks:
 
   opcache:clear:
-    - run: killall php-cgi83 || true  # Changed from php84-cgi to php-cgi83
+    - run: killall php83-cgi || true
 
   deploy:
-    - "deploy:prepare"
-    - "deploy:vendors"
-    - "artisan:storage:link"
-    - "deploy:publish"
-
+    - 'deploy:prepare'
+    - 'deploy:vendors'
+    - 'artisan:storage:link'
+    - 'artisan:key:generate'
+    # - 'artisan:optimize'
+    - 'deploy:publish'
+    
 after:
   deploy:failed: deploy:unlock
 
