@@ -5,6 +5,7 @@ config:
   repository: 'git@github.com:RomelloLasn/hajusrakendused123.git'
   keep_releases: 2
   shared_files:
+    - .env
     - database/database.sqlite
   shared_dirs:
     - storage
@@ -17,7 +18,6 @@ hosts:
     deploy_path: '~/domeenid/www.tak22lasn.itmajakas.ee/rakendused1'
 
 tasks:
-
   opcache:clear:
     - run: killall php83-cgi || true
 
