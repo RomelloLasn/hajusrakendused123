@@ -35,18 +35,27 @@ tasks:
   build:assets:
     - run: 'cd {{release_path}} && npm ci && npm run build'
     - run: 'cd {{release_path}} && rm -rf node_modules'
+    
+  artisan:route:clear:
+    - run: '{{bin/php}} {{release_path}}/artisan route:clear'
+    
+  fix:htaccess:
+    - run: 'cp {{release_path}}/.htaccess.zone {{deploy_path}}/.htaccess'
 
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
     - 'artisan:storage:link'
     - 'artisan:config:cache'
-    - 'artisan:route:cache'
+    - 'artisan:route:clear'
+    # Route caching disabled due to conflicts
+    # - 'artisan:route:cache'
     - 'artisan:view:cache'
     - 'artisan:migrate'
     - 'artisan:key:generate'
     # Uncomment if you have frontend assets to build
     # - 'build:assets'
+    - 'fix:htaccess'
     - 'deploy:publish'
     
   deploy:writable:
