@@ -9,6 +9,17 @@ config:
     - database/database.sqlite
   shared_dirs:
     - storage
+    - bootstrap/cache
+  writable_dirs:
+    - bootstrap/cache
+    - storage
+    - storage/app
+    - storage/app/public
+    - storage/framework
+    - storage/framework/cache
+    - storage/framework/sessions
+    - storage/framework/views
+    - storage/logs
 
 hosts:
   stage:
@@ -20,17 +31,31 @@ hosts:
 tasks:
   opcache:clear:
     - run: killall php83-cgi || true
+  
+  build:assets:
+    - run: 'cd {{release_path}} && npm ci && npm run build'
+    - run: 'cd {{release_path}} && rm -rf node_modules'
 
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
     - 'artisan:storage:link'
+    - 'artisan:config:cache'
+    - 'artisan:route:cache'
+    - 'artisan:view:cache'
+    - 'artisan:migrate'
     - 'artisan:key:generate'
-    # - 'artisan:optimize'
+    # Uncomment if you have frontend assets to build
+    # - 'build:assets'
     - 'deploy:publish'
     
+  deploy:writable:
+    - run: 'chmod -R g+w {{release_path}}/storage'
+    - run: 'chmod -R g+w {{release_path}}/bootstrap/cache'
+
 after:
   deploy:failed: deploy:unlock
 
 before:
   deploy:success: opcache:clear
+  deploy:publish: deploy:writable
