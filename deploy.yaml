@@ -3,29 +3,14 @@ import:
 
 config:
   repository: 'git@github.com:RomelloLasn/hajusrakendused123.git'
-  keep_releases: 2
-  shared_files:
-    - .env
-  shared_dirs:
-    - storage
-    - bootstrap/cache
-  writable_dirs:
-    - bootstrap/cache
-    - storage
-    - storage/app
-    - storage/app/public
-    - storage/framework
-    - storage/framework/cache
-    - storage/framework/sessions
-    - storage/framework/views
-    - storage/logs
+  keep_releases: 1
 
 hosts:
   stage:
     hostname: 'tak22lasn.itmajakas.ee'
     http_user: virt118441
     remote_user: virt118441
-    deploy_path: '~/domeenid/www.tak22lasn.itmajakas.ee/rakendused1'
+    deploy_path: '~/domeenid/www.tak22lasn.itmajakas.ee/hajusrakendused'
 
 tasks:
   npm:production:
@@ -34,18 +19,6 @@ tasks:
 
   opcache:clear:
     - run: killall php83-cgi || true
-
-#  fix:permissions:
-#    - run: 'chmod -R 775 {{release_path}}/storage'
-#    - run: 'chmod -R 775 {{release_path}}/bootstrap/cache'
-#    - run: 'mkdir -p {{release_path}}/storage/framework/sessions'
-#    - run: 'mkdir -p {{release_path}}/storage/framework/views'
-#    - run: 'mkdir -p {{release_path}}/storage/framework/cache'
-#    - run: 'mkdir -p {{release_path}}/storage/logs'
-#    - run: 'chmod -R 775 {{release_path}}/storage/framework/sessions'
-#    - run: 'chmod -R 775 {{release_path}}/storage/framework/views'
-#    - run: 'chmod -R 775 {{release_path}}/storage/framework/cache'
-#    - run: 'chmod -R 775 {{release_path}}/storage/logs'
 
   deploy:
     - 'deploy:prepare'
