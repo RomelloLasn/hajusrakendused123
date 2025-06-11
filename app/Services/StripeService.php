@@ -50,10 +50,25 @@ class StripeService
             $success = str_starts_with($successUrl, 'http') ? $successUrl : $baseUrl . '/payment/success';
             $cancel = str_starts_with($cancelUrl, 'http') ? $cancelUrl : $baseUrl . '/checkout';
             
+            // Format line items for Stripe
+            $formattedLineItems = array_map(function($item) {
+                return [
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => $item->product->name,
+                            'description' => $item->product->description ?? null,
+                        ],
+                        'unit_amount' => (int)($item->product->price * 100), // Convert to cents
+                    ],
+                    'quantity' => $item->quantity,
+                ];
+            }, $lineItems->all());
+
             // Create the checkout session
             $session = \Stripe\Checkout\Session::create([
                 'payment_method_types' => ['card'],
-                'line_items' => $lineItems,
+                'line_items' => $formattedLineItems,
                 'mode' => 'payment',
                 'success_url' => $success,
                 'cancel_url' => $cancel,

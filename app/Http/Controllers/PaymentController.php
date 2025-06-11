@@ -26,6 +26,8 @@ class PaymentController extends Controller
 
     public function createPaymentIntent(Request $request)
     {
+        Log::info('Creating payment intent with request data: ' . json_encode($request->all()));
+        
         $validatedData = $request->validate([
             'amount' => 'required|numeric|min:0.5',
             'first_name' => 'required|string|max:255',
@@ -61,8 +63,9 @@ class PaymentController extends Controller
                 $successUrl = config('app.url') . '/payment/success';
                 $cancelUrl = config('app.url') . '/checkout';
                 
+                // Pass the cart items directly
                 $checkoutSession = $this->stripeService->createCheckoutSession(
-                    $cart->items, 
+                    $cart->items()->with('product')->get(), 
                     $successUrl,
                     $cancelUrl
                 );

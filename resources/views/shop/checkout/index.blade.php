@@ -159,35 +159,47 @@
                 amount: {{ $total }}
             };
             
+            console.log('Starting payment process with data:', customerData);
+            
             try {
                 // Use URL function for reliability
-                const response = await fetch('{{ url('/payment/create-intent') }}', {
+                const paymentUrl = '{{ url('/payment/create-intent') }}';
+                console.log('Sending request to:', paymentUrl);
+                
+                const response = await fetch(paymentUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify(customerData)
                 });
                 
+                console.log('Response status:', response.status);
+                
                 let data;
                 try {
-                    data = await response.json();
+                    const responseText = await response.text();
+                    console.log('Raw response:', responseText);
+                    data = JSON.parse(responseText);
                 } catch (e) {
                     console.error('Error parsing JSON response:', e);
-                    throw new Error('Could not parse server response');
+                    throw new Error('Could not parse server response. Please try again.');
                 }
                 
                 if (!response.ok || data.error) {
-                    throw new Error(data.error || 'Failed to create payment session');
+                    console.error('Server error:', data.error || 'Unknown error');
+                    throw new Error(data.error || 'Failed to create payment session. Please try again.');
                 }
                 
                 // Redirect to Stripe Checkout
                 if (data.url) {
-                    console.log('Redirecting to Stripe Checkout: ', data.url);
+                    console.log('Redirecting to Stripe Checkout:', data.url);
                     window.location.href = data.url;
                 } else {
-                    throw new Error('No checkout URL received from server');
+                    console.error('No checkout URL in response:', data);
+                    throw new Error('Could not initialize payment. Please try again.');
                 }
                 
             } catch (error) {
@@ -198,4 +210,4 @@
         });
     });
 </script>
-@endsection 
+@endsection
