@@ -59,7 +59,6 @@ tasks:
 
 after:
   deploy:failed: deploy:unlock
-  opcache:clear: pm2:restart
 
 before:
   deploy:success: opcache:clear
