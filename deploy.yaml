@@ -35,9 +35,6 @@ tasks:
   opcache:clear:
     - run: killall php83-cgi || true
 
-  pm2:restart:
-    - run: pm2 restart laravel-queue-worker
-
 #  fix:permissions:
 #    - run: 'chmod -R 775 {{release_path}}/storage'
 #    - run: 'chmod -R 775 {{release_path}}/bootstrap/cache'
