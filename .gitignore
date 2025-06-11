@@ -2,6 +2,7 @@
 /node_modules
 /public/hot
 /public/storage
+/public/build
 /storage/*.key
 .env.*
 !.env.example
@@ -23,3 +24,4 @@ yarn-error.log
 /.vscode
 /.zed
 *.env.backup*
+/database/database.sqlite

@@ -1,4 +1,4 @@
-import: 
+import:
   - recipe/laravel.php
 
 config:
@@ -6,7 +6,6 @@ config:
   keep_releases: 2
   shared_files:
     - .env
-    - database/database.sqlite
   shared_dirs:
     - storage
     - bootstrap/cache
@@ -29,63 +28,41 @@ hosts:
     deploy_path: '~/domeenid/www.tak22lasn.itmajakas.ee/rakendused1'
 
 tasks:
+  npm:production:
+    - run: 'cd {{release_path}} && npm ci'
+    - run: 'cd {{release_path}} && npx vite build'
+
   opcache:clear:
     - run: killall php83-cgi || true
-  
-  build:assets:
-    - run: 'cd {{release_path}} && npm ci && npm run build'
-    - run: 'cd {{release_path}} && rm -rf node_modules'
-    
-  artisan:route:clear:
-    - run: '{{bin/php}} {{release_path}}/artisan route:clear'
-    
-  fix:htaccess:
-    - run: 'cp {{release_path}}/.htaccess.zone {{deploy_path}}/.htaccess'
-    
-  fix:permissions:
-    - run: 'chmod -R 775 {{release_path}}/storage'
-    - run: 'chmod -R 775 {{release_path}}/bootstrap/cache'
-    - run: 'mkdir -p {{release_path}}/storage/framework/sessions'
-    - run: 'mkdir -p {{release_path}}/storage/framework/views'
-    - run: 'mkdir -p {{release_path}}/storage/framework/cache'
-    - run: 'mkdir -p {{release_path}}/storage/logs'
-    - run: 'chmod -R 775 {{release_path}}/storage/framework/sessions'
-    - run: 'chmod -R 775 {{release_path}}/storage/framework/views'
-    - run: 'chmod -R 775 {{release_path}}/storage/framework/cache'
-    - run: 'chmod -R 775 {{release_path}}/storage/logs'
-    
-  setup:database:
-    - run: 'mkdir -p {{deploy_path}}/shared/database'
-    - run: 'touch {{deploy_path}}/shared/database/database.sqlite'
-    - run: 'chmod 777 {{deploy_path}}/shared/database/database.sqlite'
-    
-  verify:stripe-keys:
-    - run: "echo 'Verifying Stripe keys...'"
-    - run: 'cd {{release_path}} && {{bin/php}} artisan tinker --execute="echo \"STRIPE KEY: \".env(\"STRIPE_KEY\").PHP_EOL.\"STRIPE SECRET: \".substr(env(\"STRIPE_SECRET\"), 0, 5).\"...\".PHP_EOL;"'
+
+  pm2:restart:
+    - run: pm2 restart laravel-queue-worker
+
+#  fix:permissions:
+#    - run: 'chmod -R 775 {{release_path}}/storage'
+#    - run: 'chmod -R 775 {{release_path}}/bootstrap/cache'
+#    - run: 'mkdir -p {{release_path}}/storage/framework/sessions'
+#    - run: 'mkdir -p {{release_path}}/storage/framework/views'
+#    - run: 'mkdir -p {{release_path}}/storage/framework/cache'
+#    - run: 'mkdir -p {{release_path}}/storage/logs'
+#    - run: 'chmod -R 775 {{release_path}}/storage/framework/sessions'
+#    - run: 'chmod -R 775 {{release_path}}/storage/framework/views'
+#    - run: 'chmod -R 775 {{release_path}}/storage/framework/cache'
+#    - run: 'chmod -R 775 {{release_path}}/storage/logs'
 
   deploy:
     - 'deploy:prepare'
     - 'deploy:vendors'
-    - 'setup:database'
+    - 'npm:production'
     - 'artisan:storage:link'
-    - 'artisan:config:clear'
-    - 'artisan:cache:clear'
-    - 'artisan:route:clear'
-    - 'artisan:view:clear'
+    - 'artisan:optimize:clear'
     - 'artisan:migrate'
-    - 'artisan:key:generate'
-    - 'verify:stripe-keys'
-    - 'fix:htaccess'
-    - 'fix:permissions'
+    - 'artisan:optimize'
     - 'deploy:publish'
-    
-  deploy:writable:
-    - run: 'chmod -R g+w {{release_path}}/storage'
-    - run: 'chmod -R g+w {{release_path}}/bootstrap/cache'
 
 after:
   deploy:failed: deploy:unlock
+  opcache:clear: pm2:restart
 
 before:
   deploy:success: opcache:clear
-  deploy:publish: deploy:writable
