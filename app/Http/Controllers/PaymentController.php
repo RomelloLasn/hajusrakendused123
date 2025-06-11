@@ -26,23 +26,37 @@ class PaymentController extends Controller
 
     public function createPaymentIntent(Request $request)
     {
-        Log::info('Creating payment intent with request data: ' . json_encode($request->all()));
-        
-        $validatedData = $request->validate([
-            'amount' => 'required|numeric|min:0.5',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|string|max:20',
-        ]);
-
         try {
-            // First, check if Stripe keys are properly configured
-            if (empty(env('STRIPE_SECRET'))) {
-                Log::error('Stripe secret key is not set in environment');
+            Log::info('Starting payment intent creation', [
+                'request_data' => $request->all(),
+                'app_url' => config('app.url'),
+                'environment' => config('app.env')
+            ]);
+            
+            $validatedData = $request->validate([
+                'amount' => 'required|numeric|min:0.5',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|email',
+                'phone' => 'required|string|max:20',
+            ]);
+
+            // Check if Stripe keys are properly configured
+            $stripeSecret = config('services.stripe.secret');
+            if (empty($stripeSecret)) {
+                Log::error('Stripe secret key is not set');
                 return response()->json(['error' => 'Payment processing is not properly configured'], 500);
             }
             
+            // Log Stripe configuration state
+            Log::info('Stripe configuration check', [
+                'has_secret' => !empty($stripeSecret),
+                'secret_length' => strlen($stripeSecret),
+                'has_key' => !empty(config('services.stripe.key')),
+                'success_url' => config('services.stripe.success_url'),
+                'cancel_url' => config('services.stripe.cancel_url'),
+            ]);
+
             $sessionId = $this->getCartSessionId();
             $cart = Cart::where('session_id', $sessionId)->first();
             
@@ -63,7 +77,6 @@ class PaymentController extends Controller
                 $successUrl = config('app.url') . '/payment/success';
                 $cancelUrl = config('app.url') . '/checkout';
                 
-                // Pass the cart items directly
                 $checkoutSession = $this->stripeService->createCheckoutSession(
                     $cart->items()->with('product')->get(), 
                     $successUrl,
@@ -74,12 +87,13 @@ class PaymentController extends Controller
                     'id' => $checkoutSession->id,
                     'url' => $checkoutSession->url,
                 ]);
+                
             } catch (\Stripe\Exception\ApiErrorException $stripeError) {
                 Log::error('Stripe API Error: ' . $stripeError->getMessage());
                 return response()->json(['error' => 'Payment processing error: ' . $stripeError->getMessage()], 500);
             }
         } catch (\Exception $e) {
-            Log::error('Error creating checkout session: ' . $e->getMessage());
+            Log::error('Error in createPaymentIntent: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -339,4 +353,4 @@ class PaymentController extends Controller
             return redirect()->route('orders.error')->with('error', 'An error occurred while processing your payment: ' . $e->getMessage());
         }
     }
-} 
+}
