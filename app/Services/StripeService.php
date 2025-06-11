@@ -45,13 +45,18 @@ class StripeService
     public function createCheckoutSession($lineItems, $successUrl, $cancelUrl)
     {
         try {
+            // Ensure URLs have https:// scheme
+            $baseUrl = config('app.url');
+            $success = str_starts_with($successUrl, 'http') ? $successUrl : $baseUrl . '/payment/success';
+            $cancel = str_starts_with($cancelUrl, 'http') ? $cancelUrl : $baseUrl . '/checkout';
+            
             // Create the checkout session
             $session = \Stripe\Checkout\Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => $lineItems,
                 'mode' => 'payment',
-                'success_url' => $successUrl,
-                'cancel_url' => $cancelUrl,
+                'success_url' => $success,
+                'cancel_url' => $cancel,
             ]);
             
             return $session;

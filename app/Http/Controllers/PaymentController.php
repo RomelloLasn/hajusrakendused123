@@ -58,10 +58,13 @@ class PaymentController extends Controller
             session()->put('checkout_customer_info', $customerInfo);
             
             try {
+                $successUrl = config('app.url') . '/payment/success';
+                $cancelUrl = config('app.url') . '/checkout';
+                
                 $checkoutSession = $this->stripeService->createCheckoutSession(
                     $cart->items, 
-                    $request->amount,
-                    $customerInfo
+                    $successUrl,
+                    $cancelUrl
                 );
                 
                 return response()->json([

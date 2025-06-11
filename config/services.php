@@ -38,6 +38,8 @@ return [
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
+        'success_url' => (str_starts_with(env('APP_URL'), 'http') ? env('APP_URL') : 'https://' . env('APP_URL')) . '/payment/success',
+        'cancel_url' => (str_starts_with(env('APP_URL'), 'http') ? env('APP_URL') : 'https://' . env('APP_URL')) . '/checkout',
     ],
 
     'spotify' => [
